@@ -1,0 +1,17 @@
+{% extends "htmlCss/index.html" %}
+{% block register %}
+  <form method="post" action="/login">
+  {% csrf_token %}
+  {% if form.errors %}
+    <p>Su usuario y/o contraseña no están registrados. Inténtelo de nuevo.</p>
+  {% endif %}
+    <table>
+      <tr><td>Usuario</td>
+        <td>{{ form.username }}</td></tr>
+      <tr><td>Contraseña</td>
+        <td>{{ form.password }}</td></tr>
+    </table>
+    <input type="submit" value="login" />
+    <input type="hidden" name="next" value="/" />
+  </form>
+{% endblock %}

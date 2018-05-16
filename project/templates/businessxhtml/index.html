@@ -1,0 +1,97 @@
+{% load staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Museos Madrid</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!--Comentario -->
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" media="screen" />
+    {% block header %}
+    {% endblock %}
+  </head>
+  <body>
+    <div id="page">
+      <div id="header">
+        <h1>Museos en Madrid</h1>
+      </div>
+      <div id="intro">
+        <p>
+        {% block intro %}
+            ¿Qué museo visitar?
+        {% endblock %}
+        </p>
+      </div>
+      <div id="menu">
+        <ul>
+          {% block menu %}
+            <li><a href="/"></a></li>
+          {% endblock %}
+          <li><a href="/museos">Todos</a></li>
+          <li><a href="#">About</a></li>
+        </ul>
+      </div>
+      <div id="menubottom"> </div>
+      <!--wrapper es el envoltorio del contenido principal -->
+      <div id="wrapper">
+        <div id="content">
+          <h2>{{ name }}</h2>
+          <div class="content">
+              <!--Descarga de datos XML de munimadrid. Redirige a Inicio -->
+            <form method="POST" action="/">
+              <input type="submit" name="enviar" value="Cargar" class="submit"/>
+            </form>
+            <!--Gestión del accesibles. Redirige a página de Inicio -->
+            <form class="checkbox" action="/" method="post">
+              <input type="submit" value="Accesibles"/>
+              <input type="checkbox" name="Accesible" value=1 {{acceso}}>
+            </form>
+          {% block content %}
+            <p>{{ content }}</p>
+            {% for museo in listaMuseo %}
+              <ul>
+                <li><a href='{{museo.url}}'>{{museo.nombre}}</a><br/>
+                <ul><li>Direccion: {{museo.direccion}}</li>
+                  <li><a href="/museos/{{museo.id}}">Más información</a></li></li>
+                </ul>
+              </ul>
+            {% endfor %}
+          {% endblock %}
+          </div>
+        </div>
+      </div>
+      <div id="sidebar">
+        <h2>Regístrese</h2>
+        <!--Registro de usuarios -->
+        <div class="register">
+          <h3>{{login|safe}}</h3>
+          {% block register %}
+          {% endblock %}
+          <br/><br/><br/>
+        </div>
+        <div class="sidebar">
+        {% block sidebar %}
+          <h2>Páginas de usuarios</h2>
+          <ul>
+            {% for usuario in users %}
+              <li><a href='{{usuario}}'>Página de {{usuario|safe}}</a></li>
+            {% endfor %}
+          </ul>
+          <br/><br/>
+        {% endblock %}
+        </div>
+      </div>
+      <div style="clear: both;"> </div>
+
+      <div id="footer">
+        <p>
+          &copy Copyright Rosa Cristina Ruiz Rivas..
+          Esta aplicacion utiliza datos del portal de datos abiertos de la ciudad de Madrid"<ul>
+          <!--Enlaces a los datos munimadrid -->
+          <a href="https://datos.madrid.es/portal/site/egob/menuitem.c05c1f754a33a9fbe4b2e4b284f1a5a0/?vgnextoid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&vgnextchannel=374512b9ace9f310VgnVCM100000171f5a0aRCRD&vgnextfmt=default">Datos XML de madrid.es</a>
+          <a href="http://datos.madrid.es/portal/site/egob/menuitem.c05c1f754a33a9fbe4b2e4b284f1a5a0/?vgnextoid=e84276ac109d3410VgnVCM2000000c205a0aRCRD&vgnextchannel=374512b9ace9f310VgnVCM100000171f5a0aRCRD&vgnextfmt=default">Descripción</a></ul>
+        </p>
+      </div>
+      <div id="bottom"> </div>
+    </div>
+</body>
+</html>

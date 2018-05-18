@@ -14,9 +14,9 @@
 {% endblock %}
 {% block content %}
   <p>{{ content|safe }}</p>
-  {% for museum in listaMuseo %}
+  {% for museum in listaMuseos %}
     <ul>
-      <li><a href='{{museum.url}}'>{{museum.museo.nombre}}</a><br/>
+      <li><a href='{{museum.museo.url}}'>{{museum.museo.nombre}}</a><br/>
       <ul><li>Direccion: {{museum.museo.direccion}}</li>
         <li><a href="/museos/{{museum.museo.id}}">Más información</a></li></li>
         <li><strong>Fecha de selección: {{museum.fecha}}</strong></li>

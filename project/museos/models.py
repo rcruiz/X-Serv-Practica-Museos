@@ -17,7 +17,7 @@ class Museo(models.Model):
     ncomment = models.IntegerField(default = 0)
 
 class MuseoSeleccionado(models.Model):
-    fecha = models.DateField(auto_now_add=True) # (auto_now=True)
+    fecha = models.DateTimeField(auto_now_add=True) # (auto_now=True)
     usuario = models.CharField(max_length = 32)
     museo = models.ForeignKey(Museo)
 
@@ -29,6 +29,6 @@ class Comentario(models.Model):
 
 class Css(models.Model):
     usuario = models.CharField(max_length = 32)
-    Titulo = models.CharField(max_length = 32)
+    titulo = models.CharField(max_length = 32)
     tamLetra = models.IntegerField(default=12)
-    colorLetra = models.CharField(max_length = 32, default = "")
+    colorFondo = models.CharField(max_length = 32)

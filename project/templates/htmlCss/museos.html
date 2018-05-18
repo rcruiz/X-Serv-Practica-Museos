@@ -1,0 +1,31 @@
+{% extends "htmlCss/index.html" %}
+{% block intro %}
+  <strong>Página de {{usuario}} </strong><br/><br />
+{% endblock %}
+{% block menu %}
+  <li><a href="/">Inicio</a></li>
+{% endblock %}
+{% block content %}
+  <p>{{ content|safe }}</p>
+  <form class="distrito" action="" method="POST">
+    <select name="distrito">
+      <option value="Mostrar Todos"></option>
+      {% for dis in listaDistrito %}
+        <option value={{dis}}>{{dis}}</option>
+      {% endfor %}
+      </select>
+      <input type="submit" name={{filtro|default:"filtro"}} value="Distrito">
+  </form>
+  {% for mus in listaMuseos %}
+    <ul>
+      <li><a href="/museos/{{mus.id}}">{{mus.nombre}}</a>
+        <input type="submit" name="puntua" value="+1" class="puntua">
+      </li>
+      {% if usuario|length != 0 %}
+      <form method="POST" action="" >
+        <button type="submit" name="_submit" value="{{mus.id}}">Seleccionar</button>
+      </form>
+      {% endif %}
+    </ul>
+  {% endfor %}
+{% endblock %}

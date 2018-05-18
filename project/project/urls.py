@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^logout', logout, {'next_page': '/'}),
     url(r'^login', login),
     #url(r'^museos/(\d+)', views.museo_id, name='museo_id'),
-    #url(r'^museos', views.museos, name='museos_all'),
+    url(r'^museos', views.museos_all, name='museos_all'),
     url(r'^css$', views.css),
     ##url(r'^static/(?P<path>.*)$', serve, {'document_root':settings.STATIC_URL }),
     ##url(r'^(static/(?P<path>.*)$', serve, {'document_root':'templates/businessxhtml'}),

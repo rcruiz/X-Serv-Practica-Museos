@@ -88,25 +88,26 @@ def parsear(request):
 
 @csrf_exempt
 def principal(request):
-    acceso = 0
+    validar,acceso = 0, 0
     cruz = 'unchecked'
     luser = []
     user = request.user.username
     regUsuarios = userLog(request)
-    lMuseos = Museo.objects.all().order_by("-ncomment")[:5]
+    lMuseos = Museo.objects.all()[:5]#.order_by("-ncomment")[:5]
     titulo = " Los museos almacenados son:"
     if request.method == 'POST':
         acceso=request.POST.get('Accesible')
         if request.user.is_authenticated():
             user = request.user.username
-            validar = request.POST.get('_submit')
-            print(validar)
-            #if 'enviar' in request.POST:
-            #    validar = 1
+            #validar = request.POST.get('_submit')
+            #print(validar)
+            if '_submit' in request.POST:
+                validar = 1
+            print(request.body,validar)
             if validar or not len(lMuseos):
                 print("eo")
-                lMuseos = parsear(request)
-                lMuseos = Museo.objects.all() #.order_by("-ncomment")[:5]
+                lParse = parsear(request)
+                lMuseos = lParse[:5]
     if acceso:
         lMuseos = Museo.objects.filter(accesible=acceso)
         cruz = 'checked'
@@ -116,9 +117,47 @@ def principal(request):
         add = a.usuario
         if add not in luser:
             luser.append(add)
+    #print(lMuseos)
     plantilla = get_template("htmlCss/index.html")
-    c = Context({'name': titulo, 'listaMuseo': lMuseos, 'users': luser, 'login': regUsuarios, 'acceso':cruz, 'usuario': user})
+    c = Context({'name': titulo, 'listaMuseos': lMuseos, 'users': luser, 'login': regUsuarios, 'acceso':cruz, 'usuario': user})
     return HttpResponse(plantilla.render(c))
+
+@csrf_exempt
+def museos_all(request):
+    filtro = None
+    lDistritos = []
+    lusers = usuariosLat(request)
+    user = request.user.username
+    regUsuarios = userLog(request)
+    respuesta = "Todos los museos son:"
+    lMuseos = Museo.objects.all()
+    for m in lMuseos:
+        addDistrito = m.distrito
+        if addDistrito not in lDistritos:
+            lDistritos.append(addDistrito)
+    print(lDistritos)
+    if request.method == 'POST':
+        filtro = request.POST.get('filtro')
+        if filtro != None:
+            dis = request.POST['distrito']
+            if dis in lDistritos:
+                lMuseos = Museo.objects.filter(distrito=dis)
+        else:
+            lMuseos = Museo.objects.all()
+        if request.user.is_authenticated():
+            if '_submit' in request.POST:
+                museo_id = int(request.POST['_submit'])
+                lMuseoSelect = MuseoSeleccionado.objects.all()
+                ko = MuseoSeleccionado.objects.filter(museo=museo_id)
+                if not len(ko):
+                    info = Museo.objects.get(id=museo_id)
+                    addMuseo = MuseoSeleccionado(usuario=user, museo=info)
+                    addMuseo.save()
+    plantilla = get_template("htmlCss/museos.html")
+    c = Context({'listaMuseos': lMuseos, 'content': respuesta, 'login': regUsuarios, 'users': lusers, 'listaDistrito': lDistritos, 'usuario': user, 'filtro': filtro})
+    return HttpResponse(plantilla.render(c))
+
+
 
 @csrf_exempt
 def usuario(request, recurso):
@@ -171,7 +210,7 @@ def usuario(request, recurso):
         if len(lMuseoUser) > 5:
             lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[5:10]
     plantilla = get_template("htmlCss/usuario.html")
-    c = RequestContext(request,{'listaMuseo': lMuseoUser, 'content':respuesta, 'login': regUsuarios, 'users': lusers, 'usuario':user, 'bg':background})
+    c = RequestContext(request,{'listaMuseos': lMuseoUser, 'content':respuesta, 'login': regUsuarios, 'users': lusers, 'usuario':user, 'bg':background})
     return HttpResponse(plantilla.render(c))
 
 def user_xml(request, recurso):

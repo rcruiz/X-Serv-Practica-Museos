@@ -83,8 +83,16 @@ def parsear(request):
         contenido.save()
         cont = cont +1
     lMuseosParseada = Museo.objects.all()
-    print(lMuseosParseada)
+    #print(lMuseosParseada)
     return lMuseosParseada
+
+def cargaMuseosComentados():
+    lcomment = Comentario.objects.all()
+    for museo in lcomment:
+        add = museo.museo_id
+        museoComentado = Museo.objects.get(id=add)
+        museoComentado.ncomment += 1
+        museoComentado.save()
 
 @csrf_exempt
 def principal(request):
@@ -93,8 +101,9 @@ def principal(request):
     luser = []
     user = request.user.username
     regUsuarios = userLog(request)
-    lMuseos = Museo.objects.all()[:5]#.order_by("-ncomment")[:5]
     titulo = " Los museos almacenados son:"
+    lMuseos = Museo.objects.exclude(ncomment=False)[:5]
+    print(lMuseos)
     if request.method == 'POST':
         acceso=request.POST.get('Accesible')
         if request.user.is_authenticated():
@@ -102,12 +111,13 @@ def principal(request):
             #validar = request.POST.get('_submit')
             #print(validar)
             if '_submit' in request.POST:
-                validar = 1
+                validar = True
             print(request.body,validar)
-            if validar or not len(lMuseos):
-                print("eo")
+            if validar:# or not len(lMuseos):
                 lParse = parsear(request)
-                lMuseos = lParse[:5]
+                lMuseos = Museo.exclude(ncomment=False)[:5]
+            num = int(lMuseos[0].ncomment)
+            print(num)
     if acceso:
         lMuseos = Museo.objects.filter(accesible=acceso)
         cruz = 'checked'
@@ -117,7 +127,7 @@ def principal(request):
         add = a.usuario
         if add not in luser:
             luser.append(add)
-    #print(lMuseos)
+    print(lMuseos)
     plantilla = get_template("htmlCss/index.html")
     c = Context({'name': titulo, 'listaMuseos': lMuseos, 'users': luser, 'login': regUsuarios, 'acceso':cruz, 'usuario': user})
     return HttpResponse(plantilla.render(c))
@@ -129,7 +139,7 @@ def museos_all(request):
     lusers = usuariosLat(request)
     user = request.user.username
     regUsuarios = userLog(request)
-    respuesta = "Todos los museos son:"
+    titulo = "Todos los museos son:"
     lMuseos = Museo.objects.all()
     for m in lMuseos:
         addDistrito = m.distrito
@@ -154,9 +164,36 @@ def museos_all(request):
                     addMuseo = MuseoSeleccionado(usuario=user, museo=info)
                     addMuseo.save()
     plantilla = get_template("htmlCss/museos.html")
-    c = Context({'listaMuseos': lMuseos, 'content': respuesta, 'login': regUsuarios, 'users': lusers, 'listaDistrito': lDistritos, 'usuario': user, 'filtro': filtro})
+    c = Context({'listaMuseos': lMuseos, 'name': titulo, 'login': regUsuarios, 'users': lusers, 'listaDistrito': lDistritos, 'usuario': user, 'filtro': filtro})
     return HttpResponse(plantilla.render(c))
 
+@csrf_exempt
+def museo_id(request, museo_id):
+    regUsuarios = userLog(request)
+    lusers = usuariosLat(request)
+    museo_id = int(museo_id.split('/')[-1])
+    titulo = "Página de museo seleccionado. "
+    if request.method == 'GET':
+        try:
+            info = Museo.objects.get(id=museo_id)
+            comentarios = Comentario.objects.filter(museo=museo_id)
+        except Museo.DoesNotExist:
+            titulo += "Museo no almacenado"
+        except Comentario.DoesNotExist:
+            titulo += "No tiene comentarios."
+    elif request.method == 'POST':
+        if request.user.is_authenticated():
+            com = request.POST['comment']
+            info = Museo.objects.get(id=museo_id)
+            addcom = Comentario(contenido=com, museo=info)
+            addcom.save()
+            info.ncomment += 1
+            info.save()
+    enlace = request.get_host()
+    comentarios = Comentario.objects.filter(museo=museo_id)
+    plantilla = get_template("htmlCss/museo_id.html")
+    c = Context({'name': titulo, 'museum': info,'login':regUsuarios, 'dir': enlace, 'users': lusers, 'lcomment':comentarios})
+    return HttpResponse(plantilla.render(c))
 
 
 @csrf_exempt
@@ -167,12 +204,12 @@ def usuario(request, recurso):
     cuerpo = request.body
     user = recurso.split('/')[0]
     userReg = request.user.username
-    respuesta = "Página de usuario"
+    titulo = "Página de usuario"
     if request.method == 'GET':
         try:
             lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)
         except MuseoSeleccionado.DoesNotExist:
-            respuesta += recurso + " no tiene museos seleccionados"
+            titulo += recurso + " no tiene museos seleccionados"
     elif request.method == 'POST':
         lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[:5]
         if request.user.is_authenticated() and userReg == user:
@@ -202,15 +239,15 @@ def usuario(request, recurso):
                 #redirect('/' + user)
             else:
                 if 'enviar' in request.POST:
-                    #ap_id = int(request.POST.get['enviar'])
+                    #museo_id = int(request.POST.get['enviar'])
                     cuerpo = request.body.decode('utf-8')
-                    ap_id = int(cuerpo.split('=')[-1])
-                    ko = MuseoSeleccionado.objects.get(museo=ap_id) #get
+                    museo_id = int(cuerpo.split('=')[-1])
+                    ko = MuseoSeleccionado.objects.get(museo=museo_id) #get
                     ko.delete()
         if len(lMuseoUser) > 5:
             lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[5:10]
     plantilla = get_template("htmlCss/usuario.html")
-    c = RequestContext(request,{'listaMuseos': lMuseoUser, 'content':respuesta, 'login': regUsuarios, 'users': lusers, 'usuario':user, 'bg':background})
+    c = RequestContext(request,{'listaMuseos': lMuseoUser, 'name':titulo, 'login': regUsuarios, 'users': lusers, 'usuario':user, 'bg':background})
     return HttpResponse(plantilla.render(c))
 
 def user_xml(request, recurso):

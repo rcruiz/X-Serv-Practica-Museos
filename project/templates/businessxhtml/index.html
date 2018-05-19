@@ -37,25 +37,26 @@
           <h2>{{ name }}</h2>
           <div class="content">
               <!--Descarga de datos XML de madrid. Redirige a Inicio -->
-            <form method="POST" action="/">
+            <form method="POST" action="">
               <input type="submit" name="_submit" value="Cargar" class="submit"/>
             </form>
             <!--Gestión del accesibles. Redirige a página de Inicio -->
-            <form class="checkbox" action="/" method="post">
+            <form class="checkbox" action="" method="post">
               <input type="submit" value="Accesibles"/>
               <input type="checkbox" name="Accesible" value=1 {{acceso}}>
             </form>
-          {% block content %}
-            <p>{{ content }}</p>
-            {% for mus in listaMuseos %}
-              <ul>
-                <li><a href="{{mus.url}}">{{mus.nombre}}</a><br/>
-                <ul><li>Direccion: {{mus.direccion}}</li>
-                  <li><a href="/museos/{{mus.id}}">Más información</a></li></li>
+            {% block content %}
+              <p>{{ content }}</p>
+              hola
+              {% for museum in listaMus %}
+                <ul>
+                  <li><a href='{{museum.url}}'>{{museum.nombre}}</a>
+                  <ul><li>Direccion: {{museum.direccion}}</li>
+                    <li><a href="/museos/{{museum.id}}">Más información</a></li></li>
+                  </ul>
                 </ul>
-              </ul>
-            {% endfor %}
-          {% endblock %}
+              {% endfor %}
+            {% endblock %}
           </div>
         </div>
       </div>

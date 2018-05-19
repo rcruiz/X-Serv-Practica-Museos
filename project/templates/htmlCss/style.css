@@ -19,23 +19,34 @@ img a {border:none;}
 ul { list-style-type: none; }
 
 .puntua {
-  margin: 1.5%;
+  margin: auto;
   background: #B1E2F4 no-repeat center right;
   height: 35px;
   width: 35px;
   float: left;
   font-size-adjust: auto;
   color: #DB1417;
-  text-decoration-sty: solid;
+  text-decoration-style: solid;
   border-radius: 50%;
   cursor: pointer;
   text-shadow: 2px 1px #558ABB;
+  list-style-type: none;
 }
 
 .acceso {
-height: 25px;
-width: 25px;
+height: 30px;
+width: 30px;
+float: right;
 background: url(images/accesible-para-sillas-de-ruedas-21213.jpg) no-repeat center center;
+}
+
+.content .comments .comment
+{
+  margin: 0 0 0 2px;
+  font-size: 10pt;
+  display: block;
+  background: url(images/comments.gif) left no-repeat;
+  padding: 20px 0 0 27px;
 }
 
 #page {

@@ -7,7 +7,7 @@ margin:0;
 padding:0;
 line-height: 135%;
 /* background-image: radial-gradient(grey,white) ;*/
-background-image: radial-gradient(transparent 55%, #BAD4DF 85%), url(images/paseo.jpg);
+background-image: radial-gradient(transparent 55%, #BAD4DF 75%), url(images/paseo.jpg);
 }
 
 a { color: #336699; text-decoration: none; }
@@ -53,7 +53,6 @@ background: url(images/accesible-para-sillas-de-ruedas-21213.jpg) no-repeat cent
 width: 800px;
 margin: 10px auto;
 background: #eaeaea;
-
 }
 
 #header {
@@ -63,7 +62,7 @@ height: 100px;
 #header h1 {
 font-size: 21px;
 font-weight: 100;
-padding: 35px 0 0 30px;
+padding: 25px 0 0 20px;
 color: #fff;
 }
 #header h1 a {
@@ -80,7 +79,7 @@ padding: 7px 0 0 30px;
 }
 
 #intro {
-background: #efefef url(images/prado.jpeg) no-repeat top left;
+background: #37454C url(images/prado.jpeg) no-repeat top left;
 background-size: 60%;
 background-clip: border-box;
 height: 200px;

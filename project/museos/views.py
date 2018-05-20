@@ -19,7 +19,7 @@ def userLog(request):
         respuesta = "Not logged in. " + '<a href="/login">Login</a>'
     return respuesta
 
-def usuariosLat(request):
+def usuariosLateral():
     # Muestra los enlaces a páginas personales en columna lateral
     luser = []
     luserObj = MuseoSeleccionado.objects.all()
@@ -31,8 +31,8 @@ def usuariosLat(request):
 
 @csrf_exempt
 def parsear(request):
-    munimadrid = 'https://datos.madrid.es/portal/site/egob/menuitem.ac61933d6ee3c31cae77ae7784f1a5a0/?vgnextoid=00149033f2201410VgnVCM100000171f5a0aRCRD&format=xml&file=0&filename=201132-0-museos&mgmtid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&preview=full'
-    xml = urllib.request.urlopen(munimadrid)
+    madridDat = 'https://datos.madrid.es/portal/site/egob/menuitem.ac61933d6ee3c31cae77ae7784f1a5a0/?vgnextoid=00149033f2201410VgnVCM100000171f5a0aRCRD&format=xml&file=0&filename=201132-0-museos&mgmtid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&preview=full'
+    xml = urllib.request.urlopen(madridDat)
     tree = ET.parse(xml)
     root = tree.getroot()
     cont = 0
@@ -79,7 +79,10 @@ def parsear(request):
                 elif filaBD.attrib[elem]=="TRANSPORTE":
                     bus = ' '.join(filaBD.itertext())
         address = " ".join([via, street, num, postal, city])
-        contenido = Museo(id=cont,nombre=name,url=url,direccion=address,latitud=lat,longitud=l,descripcion=descrip,horario=hora, busMetro=bus, accesible=access,barrio=bar,distrito=district,email=email,tlfno=phone)
+        contenido = Museo(id=cont,nombre=name,url=url,direccion=address,
+                          latitud=lat,longitud=l,descripcion=descrip,
+                          horario=hora, busMetro=bus, accesible=access,
+                          barrio=bar,distrito=district,email=email,tlfno=phone)
         contenido.save()
         cont = cont +1
     lMuseosParseada = Museo.objects.all()
@@ -96,47 +99,42 @@ def cargaMuseosComentados():
 
 @csrf_exempt
 def principal(request):
-    validar,acceso = 0, 0
+    acceso = 0
     cruz = 'unchecked'
-    luser = []
+    lusers = usuariosLateral()
     user = request.user.username
     regUsuarios = userLog(request)
-    titulo = " Los museos almacenados son:"
-    lMuseos = Museo.objects.exclude(ncomment=False)[:5]
-    print(lMuseos)
-    if request.method == 'POST':
+    titulo = " Los museos más comentados son:"
+    if request.method == 'GET':
+        # Elimina los museos no comentados de la lista y solo muestra 5
+        lMuseos = Museo.objects.exclude(ncomment=False)[:5]
+    elif request.method == 'POST':
         acceso=request.POST.get('Accesible')
         if request.user.is_authenticated():
-            user = request.user.username
-            #validar = request.POST.get('_submit')
-            #print(validar)
-            if '_submit' in request.POST:
-                validar = True
-            print(request.body,validar)
-            if validar:# or not len(lMuseos):
+            #user = request.user.username
+            validar = request.POST.get('_submit')
+            #if '_submit' in request.POST:
+            #    validar = True
+            if validar or not len(lMuseos):
                 lParse = parsear(request)
-                lMuseos = Museo.exclude(ncomment=False)[:5]
-            num = int(lMuseos[0].ncomment)
-            print(num)
+                cargaMuseosComentados()
+                lMuseos = Museo.objects.exclude(ncomment=False)[:5]
+        else:
+            titulo = "No está registrado. No puede cargar los museos"
+            return redirect(principal)
     if acceso:
         lMuseos = Museo.objects.filter(accesible=acceso)
         cruz = 'checked'
-    # Muestra los enlaces a páginas personales en columna lateral
-    luserObj = MuseoSeleccionado.objects.all()
-    for a in luserObj:
-        add = a.usuario
-        if add not in luser:
-            luser.append(add)
-    print(lMuseos)
     plantilla = get_template("htmlCss/index.html")
-    c = Context({'name': titulo, 'listaMuseos': lMuseos, 'users': luser, 'login': regUsuarios, 'acceso':cruz, 'usuario': user})
+    c = Context({'name': titulo, 'listaMuseos': lMuseos, 'users': lusers,
+                 'login': regUsuarios, 'acceso':cruz, 'usuario': user})
     return HttpResponse(plantilla.render(c))
 
 @csrf_exempt
 def museos_all(request):
     filtro = None
     lDistritos = []
-    lusers = usuariosLat(request)
+    lusers = usuariosLateral()
     user = request.user.username
     regUsuarios = userLog(request)
     titulo = "Todos los museos son:"
@@ -164,13 +162,15 @@ def museos_all(request):
                     addMuseo = MuseoSeleccionado(usuario=user, museo=info)
                     addMuseo.save()
     plantilla = get_template("htmlCss/museos.html")
-    c = Context({'listaMuseos': lMuseos, 'name': titulo, 'login': regUsuarios, 'users': lusers, 'listaDistrito': lDistritos, 'usuario': user, 'filtro': filtro})
+    c = Context({'listaMuseos': lMuseos, 'name': titulo, 'login': regUsuarios,
+                 'users': lusers, 'listaDistrito': lDistritos, 'usuario': user,
+                 'filtro': filtro})
     return HttpResponse(plantilla.render(c))
 
 @csrf_exempt
 def museo_id(request, museo_id):
     regUsuarios = userLog(request)
-    lusers = usuariosLat(request)
+    lusers = usuariosLateral()
     museo_id = int(museo_id.split('/')[-1])
     titulo = "Página de museo seleccionado. "
     if request.method == 'GET':
@@ -198,18 +198,16 @@ def museo_id(request, museo_id):
 
 @csrf_exempt
 def usuario(request, recurso):
-    background = '#efefef'
     regUsuarios = userLog(request)
-    lusers = usuariosLat(request)
+    lusers = usuariosLateral()
     cuerpo = request.body
     user = recurso.split('/')[0]
     userReg = request.user.username
-    titulo = "Página de usuario"
     if request.method == 'GET':
         try:
             lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)
         except MuseoSeleccionado.DoesNotExist:
-            titulo += recurso + " no tiene museos seleccionados"
+            titulo = recurso + " no tiene museos seleccionados"
     elif request.method == 'POST':
         lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[:5]
         if request.user.is_authenticated() and userReg == user:
@@ -231,7 +229,6 @@ def usuario(request, recurso):
                         #contenido = cssObj(tamLetra=size, colorFondo=background, titulo=title)
                         cssObj.save()
                         css(request)
-                        print('vamos')
                 except:
                     t= "Pagina de " + user
                     contenido = Css(usuario=user, tamLetra=size, colorFondo=background ,titulo=t)
@@ -247,7 +244,7 @@ def usuario(request, recurso):
         if len(lMuseoUser) > 5:
             lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[5:10]
     plantilla = get_template("htmlCss/usuario.html")
-    c = RequestContext(request,{'listaMuseos': lMuseoUser, 'name':titulo, 'login': regUsuarios, 'users': lusers, 'usuario':user, 'bg':background})
+    c = Context({'listaMuseos': lMuseoUser, 'login': regUsuarios, 'users': lusers, 'usuario':user, 'bg':background})
     return HttpResponse(plantilla.render(c))
 
 def user_xml(request, recurso):
@@ -268,4 +265,3 @@ def css(request):
         css = Css.objects.get(usuario=user)
     plantilla = get_template("htmlCss/style.css")
     c = Context({'varsCss': css.colorFondo })
-    #redirect('static/style.css')

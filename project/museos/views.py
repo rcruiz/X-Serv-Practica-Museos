@@ -86,7 +86,6 @@ def parsear(request):
         contenido.save()
         cont = cont +1
     lMuseosParseada = Museo.objects.all()
-    #print(lMuseosParseada)
     return lMuseosParseada
 
 def cargaMuseosComentados():
@@ -113,8 +112,6 @@ def principal(request):
         if request.user.is_authenticated():
             #user = request.user.username
             validar = request.POST.get('_submit')
-            #if '_submit' in request.POST:
-            #    validar = True
             if validar or not len(lMuseos):
                 lParse = parsear(request)
                 cargaMuseosComentados()
@@ -130,28 +127,31 @@ def principal(request):
                  'login': regUsuarios, 'acceso':cruz, 'usuario': user})
     return HttpResponse(plantilla.render(c))
 
+
 @csrf_exempt
 def museos_all(request):
-    filtro = None
+    dis = {}
     lDistritos = []
     lusers = usuariosLateral()
     user = request.user.username
     regUsuarios = userLog(request)
     titulo = "Todos los museos son:"
-    lMuseos = Museo.objects.all()
-    for m in lMuseos:
-        addDistrito = m.distrito
-        if addDistrito not in lDistritos:
-            lDistritos.append(addDistrito)
-    print(lDistritos)
-    if request.method == 'POST':
-        filtro = request.POST.get('filtro')
-        if filtro != None:
-            dis = request.POST['distrito']
-            if dis in lDistritos:
-                lMuseos = Museo.objects.filter(distrito=dis)
+    if request.method == 'GET':
+        lMuseos = Museo.objects.all()
+        # Crea la lista de distritos para filtrar
+        for m in lMuseos:
+            addDistrito = m.distrito
+            if addDistrito not in lDistritos:
+                lDistritos.append(addDistrito)
+        QS = request.GET
+        dis = QS.get('distrito',default=None)
+        if dis in lDistritos:
+            lMuseos = Museo.objects.filter(distrito=dis)
         else:
             lMuseos = Museo.objects.all()
+    elif request.method == 'POST':
+        #filtro = request.POST.get('filtro')
+        #if filtro != None:
         if request.user.is_authenticated():
             if '_submit' in request.POST:
                 museo_id = int(request.POST['_submit'])
@@ -163,9 +163,9 @@ def museos_all(request):
                     addMuseo.save()
     plantilla = get_template("htmlCss/museos.html")
     c = Context({'listaMuseos': lMuseos, 'name': titulo, 'login': regUsuarios,
-                 'users': lusers, 'listaDistrito': lDistritos, 'usuario': user,
-                 'filtro': filtro})
+                 'users': lusers, 'listDistrito': lDistritos, 'usuario': user})
     return HttpResponse(plantilla.render(c))
+
 
 @csrf_exempt
 def museo_id(request, museo_id):
@@ -192,24 +192,37 @@ def museo_id(request, museo_id):
     enlace = request.get_host()
     comentarios = Comentario.objects.filter(museo=museo_id)
     plantilla = get_template("htmlCss/museo_id.html")
-    c = Context({'name': titulo, 'museum': info,'login':regUsuarios, 'dir': enlace, 'users': lusers, 'lcomment':comentarios})
+    c = Context({'name': titulo, 'museum': info,'login':regUsuarios,
+                 'dir': enlace, 'users': lusers, 'lcomment':comentarios})
     return HttpResponse(plantilla.render(c))
 
 
 @csrf_exempt
 def usuario(request, recurso):
+    background = '#efefef'
     regUsuarios = userLog(request)
     lusers = usuariosLateral()
-    cuerpo = request.body
+    cuerpo = request.body ###
+    tanda = 0
+    numPag = []
     user = recurso.split('/')[0]
     userReg = request.user.username
     if request.method == 'GET':
+        # Se muestran los museos del usuario de 5 en 5
+        QS = request.GET
+        tanda = QS.get('numPage',default=0)
+        tanda = int(tanda)
         try:
             lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)
+            if len(lMuseoUser) >= tanda*5:
+                print(len(lMuseoUser), str(tanda))
+                lMuseoUser = lMuseoUser[tanda*5:(tanda+1)*5]
+                tanda += 1
+                numPag.append(tanda)
         except MuseoSeleccionado.DoesNotExist:
             titulo = recurso + " no tiene museos seleccionados"
     elif request.method == 'POST':
-        lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[:5]
+        lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)
         if request.user.is_authenticated() and userReg == user:
             #user = request.user.username
             cssForm = request.POST.get('css')
@@ -231,7 +244,8 @@ def usuario(request, recurso):
                         css(request)
                 except:
                     t= "Pagina de " + user
-                    contenido = Css(usuario=user, tamLetra=size, colorFondo=background ,titulo=t)
+                    contenido = Css(usuario=user, tamLetra=size,
+                                    colorFondo=background ,titulo=t)
                     contenido.save()
                 #redirect('/' + user)
             else:
@@ -241,10 +255,12 @@ def usuario(request, recurso):
                     museo_id = int(cuerpo.split('=')[-1])
                     ko = MuseoSeleccionado.objects.get(museo=museo_id) #get
                     ko.delete()
-        if len(lMuseoUser) > 5:
-            lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[5:10]
+        #if len(lMuseoUser) > 5:
+        #    lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[5:10]
     plantilla = get_template("htmlCss/usuario.html")
-    c = Context({'listaMuseos': lMuseoUser, 'login': regUsuarios, 'users': lusers, 'usuario':user, 'bg':background})
+    c = RequestContext(request,{'listaMuseos': lMuseoUser, 'login': regUsuarios,
+                                'users': lusers, 'usuario':user,'tanda':tanda,
+                                'listPage':numPag,'bg':background})
     return HttpResponse(plantilla.render(c))
 
 def user_xml(request, recurso):

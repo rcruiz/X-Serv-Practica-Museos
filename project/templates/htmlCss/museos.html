@@ -6,14 +6,14 @@
   <li><a href="/">Inicio</a></li>
 {% endblock %}
 {% block content %}
-  <form class="distrito" action="" method="POST">
+  <form class="distrito" action="/museos" method="GET">
     <select name="distrito">
-      <option value="Mostrar Todos"></option>
-      {% for dis in listaDistrito %}
+      <option value="">Mostrar todos</option>
+      {% for dis in listDistrito %}
         <option value={{dis}}>{{dis}}</option>
       {% endfor %}
-      </select>
-      <input type="submit" name={{filtro|default:"filtro"}} value="Distrito">
+    </select>
+    <input type="submit" value="distrito">
   </form>
   {% for mus in listaMuseos %}
     <ul>

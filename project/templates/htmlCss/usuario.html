@@ -28,18 +28,14 @@
       {% endif %}
     </ul>
   {% endfor %}
-  <form class="numerar" action="" method="GET">
-    <select name="numPage">
-      {% for t in listPage %}
-        <option value={{t}}>{{t}}</option>
-      {% endfor %}
-    </select>
-    <input type="submit" value="numPage">
-  </form>
-  {% for t in listPage %}
-    <button onclick="location.href='{{museum.usuario}}?numPage={{t}}'">{{t}}</button>
-    <a href='{{museum.usuario}}?numPage={{tanda}}'>t</a>
-  {% endfor %}
+
+    {% for t in listPage %}
+    <div class="numerar">
+      <a href='{{museum.usuario}}?numPage={{tanda}}'>{{t}}</a>
+    </div>
+    {% endfor %}
+
+
   <div class="css">
   {% if '{{museum.usuario}}' %}
     <form class="css" method="POST" action="">

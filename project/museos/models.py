@@ -15,6 +15,7 @@ class Museo(models.Model):
     email = models.EmailField(max_length=128,default = "")
     tlfno = models.CharField(max_length = 12)
     ncomment = models.IntegerField(default = 0)
+    puntuacion = models.IntegerField(default = 0)
 
 class MuseoSeleccionado(models.Model):
     fecha = models.DateTimeField(auto_now_add=True) # (auto_now=True)

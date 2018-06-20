@@ -1,13 +1,13 @@
 import xml.etree.ElementTree as ET
 from django.shortcuts import render, redirect
 from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .models import Museo, MuseoSeleccionado, Comentario, Css
-from django.contrib.auth import logout, login
+from django.contrib.auth import logout, login, authenticate
 from django.template.loader import get_template
-from django.template import Context
-from django.template import RequestContext
+from django.template import Context, RequestContext
 import urllib.request
 
 def userLog(request):
@@ -33,6 +33,7 @@ def usuariosLateral():
 def parsear(request):
     madridDat = 'https://datos.madrid.es/portal/site/egob/menuitem.ac61933d6ee3c31cae77ae7784f1a5a0/?vgnextoid=00149033f2201410VgnVCM100000171f5a0aRCRD&format=xml&file=0&filename=201132-0-museos&mgmtid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&preview=full'
     xml = urllib.request.urlopen(madridDat)
+    # https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.ElementTree
     tree = ET.parse(xml)
     root = tree.getroot()
     cont = 0
@@ -109,6 +110,7 @@ def principal(request):
         lMuseos = Museo.objects.exclude(ncomment=False)[:5]
     elif request.method == 'POST':
         acceso=request.POST.get('Accesible')
+        print(acceso)
         if request.user.is_authenticated():
             #user = request.user.username
             validar = request.POST.get('_submit')
@@ -145,13 +147,20 @@ def museos_all(request):
                 lDistritos.append(addDistrito)
         QS = request.GET
         dis = QS.get('distrito',default=None)
-        if dis in lDistritos:
-            lMuseos = Museo.objects.filter(distrito=dis)
-        else:
-            lMuseos = Museo.objects.all()
+        # Para filtrar sin contar espacios a partir de la QueryString
+        if dis:
+            lMuseos = Museo.objects.filter(distrito__startswith=dis)
     elif request.method == 'POST':
         #filtro = request.POST.get('filtro')
         #if filtro != None:
+        lMuseos = Museo.objects.all()
+        puntua=request.POST.get('puntua')
+        print(puntua)
+        if puntua:
+            museo_id = int(puntua)
+            info = Museo.objects.get(id=museo_id)
+            info.puntuacion += 1
+            info.save()
         if request.user.is_authenticated():
             if '_submit' in request.POST:
                 museo_id = int(request.POST['_submit'])
@@ -173,12 +182,13 @@ def museo_id(request, museo_id):
     lusers = usuariosLateral()
     museo_id = int(museo_id.split('/')[-1])
     titulo = "Página de museo seleccionado. "
+    info = None
     if request.method == 'GET':
         try:
             info = Museo.objects.get(id=museo_id)
             comentarios = Comentario.objects.filter(museo=museo_id)
         except Museo.DoesNotExist:
-            titulo += "Museo no almacenado"
+            titulo = "Museo no almacenado"
         except Comentario.DoesNotExist:
             titulo += "No tiene comentarios."
     elif request.method == 'POST':
@@ -192,8 +202,8 @@ def museo_id(request, museo_id):
     enlace = request.get_host()
     comentarios = Comentario.objects.filter(museo=museo_id)
     plantilla = get_template("htmlCss/museo_id.html")
-    c = Context({'name': titulo, 'museum': info,'login':regUsuarios,
-                 'dir': enlace, 'users': lusers, 'lcomment':comentarios})
+    c = RequestContext(request,{'name': titulo, 'museum': info, 'login':regUsuarios,
+                                'dir': enlace, 'users': lusers, 'lcomment':comentarios})
     return HttpResponse(plantilla.render(c))
 
 
@@ -215,10 +225,12 @@ def usuario(request, recurso):
         try:
             lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)
             if len(lMuseoUser) >= tanda*5:
+                numPag = range(5,len(lMuseoUser),5)
                 print(len(lMuseoUser), str(tanda))
                 lMuseoUser = lMuseoUser[tanda*5:(tanda+1)*5]
                 tanda += 1
-                numPag.append(tanda)
+                print(numPag)
+                #numPag.append(tanda)
         except MuseoSeleccionado.DoesNotExist:
             titulo = recurso + " no tiene museos seleccionados"
     elif request.method == 'POST':
@@ -255,8 +267,6 @@ def usuario(request, recurso):
                     museo_id = int(cuerpo.split('=')[-1])
                     ko = MuseoSeleccionado.objects.get(museo=museo_id) #get
                     ko.delete()
-        #if len(lMuseoUser) > 5:
-        #    lMuseoUser = MuseoSeleccionado.objects.filter(usuario=recurso)[5:10]
     plantilla = get_template("htmlCss/usuario.html")
     c = RequestContext(request,{'listaMuseos': lMuseoUser, 'login': regUsuarios,
                                 'users': lusers, 'usuario':user,'tanda':tanda,
@@ -267,12 +277,17 @@ def user_xml(request, recurso):
     user = recurso.split('/')[0]
     lMuseoUser = MuseoSeleccionado.objects.filter(usuario=user)
     hijos = serializers.serialize("xml" ,lMuseoUser)
-    f = open('usuario.xml',"w")
-    f.write(hijos)
-    f.close()
-    f2 = open('usuario.xml',"r")
-    xml = f2.read()
-    return HttpResponse(xml, content_type='text/xml')
+    return HttpResponse(hijos, content_type='text/xml')
+
+def user_json(request, recurso):
+    user = recurso.split('/')[0]
+    lMuseoUser = MuseoSeleccionado.objects.filter(usuario=user)
+    # https://docs.djangoproject.com/en/2.0/topics/serialization/
+    # https://stackoverflow.com/questions/26373992/use-jsonresponse-to-serialize-a-queryset-in-django-1-7
+    hijos = serializers.serialize("json", lMuseoUser)
+    print(type(hijos))
+    return HttpResponse(hijos, content_type="application/json")
+
 
 @csrf_exempt
 def css(request):

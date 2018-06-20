@@ -24,6 +24,7 @@ ul { list-style-type: none; }
   height: 35px;
   width: 35px;
   float: left;
+  position: relative;
   font-size-adjust: auto;
   color: #DB1417;
   text-decoration-style: solid;
@@ -32,7 +33,21 @@ ul { list-style-type: none; }
   text-shadow: 2px 1px #558ABB;
   list-style-type: none;
 }
-
+.numerar {
+    padding: 4px 14px;
+    color: #78909C;
+    text-decoration: none;
+    background-color: #E3E8EA;
+    display:block;
+    float: left;
+    position: relative;
+    border-radius: 50px;
+    margin: 4px;
+    font-size: 1.4em;
+    font-weight: 700;
+    cursor: pointer;
+    list-style-type: none;
+}
 .acceso {
 height: 30px;
 width: 30px;
@@ -92,6 +107,16 @@ float: right;
 padding: 10px 20px 0 0;
 text-align: right;
 width: 290px;
+}
+
+#register {
+    background: url(images/sidebarh2.jpg) no-repeat;
+    height: 50px;
+    line-height: 50px;
+    font-weight: 600;
+    font-size: 14px;
+    margin: 0 0 0 0; padding: 0 0 0 10px;
+    color: #efefef;
 }
 
 #menu {
@@ -155,6 +180,7 @@ width: 430px;
 #sidebar {
 float: right;
 width: 300px;
+display: inline-block;
 }
 
 #footer {
@@ -190,7 +216,9 @@ color: {{ varsCss.colorFondo }};
     list-style-type: none;
 }
 
-#sidebar h2 {
+
+
+#register, #sidebar h2 {
     background: url(images/sidebarh2.jpg) no-repeat;
     height: 50px;
     line-height: 50px;
@@ -217,6 +245,7 @@ padding: 10px 0 20px 10px;
 #acceso button  {
     background: url(images/accesible-para-sillas-de-ruedas-21213.jpg) no-repeat center left;
     padding: 15px 15px;
+
 }
 
 #puntua  {

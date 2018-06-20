@@ -3,9 +3,13 @@
   <li><a href="/">Inicio</a></li>
 {% endblock %}
 {% block content %}
+  {% if museum %}
   <ul><li>
     {% if museum.accesible %}
         <button class="acceso" type="button" name="button"></button>
+    {% endif %}
+    {% if museum.puntuacion %}
+      <button class="puntua">{{museum.puntuacion}}</button>
     {% endif %}
     <h2>{{museum.nombre}}</h2></li>
       <ul><li><a href='{{museum.url}}'>{{museum.url}}</a></li>
@@ -21,13 +25,16 @@
             {{comentado.contenido}}
           </div>
           {% endfor %}
-        <p><form method="POST" action="">
-          <label for="comment">Comentario</label><br />
-          <textarea cols="30" rows="5" name="comment" ></textarea>
-          <input type="submit" name="submit" value="Añadir" class="submit">
-          </form>
+          {% if user.is_authenticated %}
+          <p><form method="POST" action="/museos/{{museum.id}}">
+            <label for="comment">Comentario</label><br />
+            <textarea cols="30" rows="5" name="comment" ></textarea>
+            <input type="submit" name="submit" value="Añadir" class="submit">
+          </form></p>
+          {% endif %}
         </div>
-        </p>
+
       </ul>
   </ul>
+  {% endif %}
 {% endblock %}

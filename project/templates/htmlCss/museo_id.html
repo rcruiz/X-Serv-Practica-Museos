@@ -4,14 +4,14 @@
 {% endblock %}
 {% block content %}
   {% if museum %}
-  <ul><li>
+  <ul>
     {% if museum.accesible %}
         <button class="acceso" type="button" name="button"></button>
     {% endif %}
     {% if museum.puntuacion %}
       <button class="puntua">{{museum.puntuacion}}</button>
     {% endif %}
-    <h2>{{museum.nombre}}</h2></li>
+    <li><h2>{{museum.nombre}}</h2></li>
       <ul><li><a href='{{museum.url}}'>{{museum.url}}</a></li>
         <li>Direccion: {{museum.direccion}}</li>
         <li>Latitud: {{museum.latitud}}. Longitud: {{museum.longitud}}</li>
@@ -33,7 +33,6 @@
           </form></p>
           {% endif %}
         </div>
-
       </ul>
   </ul>
   {% endif %}

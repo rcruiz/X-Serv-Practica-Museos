@@ -1,8 +1,9 @@
 {% extends "htmlCss/index.html" %}
 {% block header %}
 <style>
-  div#content {
-    background-color: {{ bg|default:"#EFEFEF" }} ;
+  div#page,#menubottom {
+    background-color: {{ bg.colorFondo }};
+    font-size:{{ bg.tamLetra }};
   }
 </style>
 {% endblock %}
@@ -14,6 +15,21 @@
 {% endblock %}
 {% block content %}
   <p>{{ content|safe }}</p>
+  {% if user.is_authenticated %}
+  <!-- {{ bg.colorFondo|default:"#EFEFEF" }}-->
+  <div class="css">
+  <h2>Cambia el estilo</h2>
+    <form class="css" method="POST" action="/{{ usuario }}">
+      {% csrf_token %}
+      <input type="color" name="fondo" value={{ bg.colorFondo }}>
+      <input id="letra" name="letraTam" type="number" min="6" max="30" value ={{ bg.tamLetra|default:"12" }}>
+      <input type='text' name='titulo' value={{ title }}>
+      <input type="submit" name = "css" value="Cambiar"/>
+      <input type="hidden" name="next" value="/{{museum.usuario}}" />
+    </form>
+
+  </div>
+    {% endif %}
   {% for museum in listaMuseos %}
     <ul>
       <li><a href='{{museum.museo.url}}'>{{museum.museo.nombre}}</a><br/>
@@ -34,20 +50,6 @@
       <a href='{{museum.usuario}}?numPage={{tanda}}'>{{t}}</a>
     </div>
     {% endfor %}
-
-
-  <div class="css">
-  {% if '{{museum.usuario}}' %}
-    <form class="css" method="POST" action="">
-      {% csrf_token %}
-      <input type="color" name="fondo" value={{ color|default:"#EFEFEF" }}>
-      <input id="letra" name="letraTam" type="number" min="6" max="30" value ={{ size|default:"12" }}>
-      <input type='text' name='titulo' value={{ title }}>
-      <input type="submit" name = "css" value="Cambiar"/>
-      <input type="hidden" name="next" value="/{{museum.usuario}}" />
-    </form>
-  {% endif %}
-  </div>
 {% endblock %}
 {% block sidebar %}
 {% endblock %}

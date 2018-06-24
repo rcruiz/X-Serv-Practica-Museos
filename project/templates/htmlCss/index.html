@@ -7,8 +7,14 @@
     <!--Comentario -->
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" media="screen" />
     <link rel="shortcut icon" href="http://download.seaicons.com/icons/aha-soft/large-home/16/Museum-icon.png" />
-    {% block header %}
-    {% endblock %}
+    {% if usuario %}
+    <style>
+      div#page,#menubottom {
+        background-color: {{ bg.colorFondo }};
+        font-size:{{ bg.tamLetra }};
+      }
+    </style>
+    {% endif %}
   </head>
   <body>
     <div id="page">
@@ -43,8 +49,13 @@
             </form>
             <!--Gestión del accesibles. Redirige a página de Inicio -->
             <form class="checkbox" action="/" method="post">
-              <input type="submit" value="Accesibles"/>
+              <button type="submit"name="Accesible" value=1 >Accesibles</button>
+              <!--<input type="submit" name="Accesible" value="Accesibles"/>
               <input type="checkbox" name="Accesible" value=1 {{acceso}}>
+              -->
+              {% if acceso %}
+                <input type="hidden" name="next" value={{acceso}} />
+              {% endif %}
             </form>
           {% block content %}
             <p>{{ content }}</p>

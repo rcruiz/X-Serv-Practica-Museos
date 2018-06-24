@@ -31,5 +31,5 @@ class Comentario(models.Model):
 class Css(models.Model):
     usuario = models.CharField(max_length = 32)
     titulo = models.CharField(max_length = 32)
-    tamLetra = models.IntegerField(default=12)
+    tamLetra = models.CharField(max_length = 4, default='12px')
     colorFondo = models.CharField(max_length = 32, default='#efefef')

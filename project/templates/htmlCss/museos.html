@@ -6,7 +6,7 @@
   <li><a href="/">Inicio</a></li>
 {% endblock %}
 {% block content %}
-  <form class="distrito" action="/museos" method="GET">
+  <form class="distrito" action="" method="GET">
     <select name="distrito">
       <option value=""><a href="/museos"></a>Mostrar todos</option>
       {% for dis in listDistrito %}
@@ -18,12 +18,11 @@
   </form>
   {% for mus in listaMuseos %}
     <ul>
-      <li><a href="/museos/{{mus.id}}">{{mus.nombre}}</a>
-        <form method="POST" action="/museos" >
-          <button type="submit" name="puntua" value="{{mus.id}}" class="puntua">+1</button>
-        </form>
-      </li>
-      <!--<button onclick="location.href='{{mus.id}}'">+1</button>-->
+      <form method="POST" action="/museos" >
+        <button type="submit" name="puntua" value="{{mus.id}}" class="puntua">+1</button>
+          <!--<button onclick="location.href='{{mus.id}}'">+1</button>-->
+      </form>
+      <li><a href="/museos/{{mus.id}}">{{mus.nombre}}</a></li>
       {% if usuario|length != 0 %}
       <form method="POST" action="" >
         <button type="submit" name="_submit" value="{{mus.id}}">Seleccionar</button>

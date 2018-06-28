@@ -24,7 +24,6 @@
       <div id="intro">
         <p>
         {% block intro %}
-            ¿Qué museo visitar?
         {% endblock %}
         </p>
       </div>
@@ -43,7 +42,7 @@
         <div id="content">
           <h2>{{ name }}</h2>
           <div class="content">
-              <!--Descarga de datos XML de munimadrid. Redirige a Inicio -->
+              <!--Descarga de datos XML de Madrid. Redirige a Inicio -->
             <form method="POST" action="/">
               <input type="submit" name="_submit" value="Cargar" class="submit"/>
             </form>
@@ -84,8 +83,8 @@
         {% block sidebar %}
           <h2>Páginas de usuarios</h2>
           <ul>
-            {% for usuario in users %}
-              <li><a href='{{usuario}}'>Página de {{usuario|safe}}</a></li>
+            {% for us in users %}
+              <li><a href=/{{us}}>{{us.Css.titulo }}</a></li>
             {% endfor %}
           </ul>
           <br/><br/>

@@ -111,14 +111,14 @@ font-style: italic;
 color: #fff;
 }
 #intro p {
-font-size: 24px;
+font-size: 20px;
 float: right;
 padding: 10px 20px 0 0;
 text-align: right;
 width: 290px;
 }
 
-#register {
+/*#register {
     background: url(images/sidebarh2.jpg) no-repeat;
     height: 50px;
     line-height: 50px;
@@ -126,6 +126,24 @@ width: 290px;
     font-size: 14px;
     margin: 0 0 0 0; padding: 0 0 0 10px;
     color: #efefef;
+}*/
+
+.register{
+  width: 250px;
+  height: 100px;
+  background-color:inherit;
+  text-align:center;
+  position:absolute;/* relative */
+  -webkit-animation: mymove 3s;  /* Safari 4.0 - 8.0 */
+  -webkit-animation-fill-mode: forwards; /* Safari 4.0 - 8.0 */
+  animation: mymove 3s;
+  animation-fill-mode:forwards;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes mymove {
+    from {top: 300px;}
+    to {top: 150px; background-color:#efefef;}/*0px*/
 }
 
 #menu {
@@ -221,7 +239,7 @@ font-size: '{{varsCss.tamLetra}}px';
     list-style-type: none;
 }
 
-#register, #sidebar h2 {
+#sidebar h2 {
     background: url(images/sidebarh2.jpg) no-repeat;
     height: 50px;
     line-height: 50px;
@@ -229,10 +247,6 @@ font-size: '{{varsCss.tamLetra}}px';
     font-size: 14px;
     margin: 0 0 0 0; padding: 0 0 0 10px;
     color: #efefef;
-}
-
-#sidebar ul li {
-
 }
 
 #sidebar ul {

@@ -1,12 +1,12 @@
 {% extends "htmlCss/index.html" %}
 {% block intro %}
-  <strong>Página de {{usuario}} </strong><br/><br />
+    <strong>{{ bg.titulo }} </strong><br />
 {% endblock %}
 {% block menu %}
   <li><a href="/">Inicio</a></li>
 {% endblock %}
 {% block content %}
-  <form class="distrito" action="" method="GET">
+  <form class="distrito" action="/museos" method="GET">
     <select name="distrito">
       <option value=""><a href="/museos"></a>Mostrar todos</option>
       {% for dis in listDistrito %}
@@ -14,7 +14,6 @@
       {% endfor %}
     </select>
     <input type="submit" value="distrito">
-    <!--<input type="submit" value="distrito"> -->
   </form>
   {% for mus in listaMuseos %}
     <ul>

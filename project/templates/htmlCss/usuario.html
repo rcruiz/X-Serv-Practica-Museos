@@ -29,7 +29,7 @@
         <li><a href="/museos/{{museum.museo.id}}">Más información</a></li></li>
         <li><strong>Fecha de selección: {{museum.fecha}}</strong></li>
       </ul>
-      {% if user.is_authenticated %}
+      {% if usuario == usReg %}
         <form method="POST" action="">
           <button type="submit" name="enviar" value={{museum.museo.id}}>Deseleccionar</button>
         </form>

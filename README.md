@@ -1,11 +1,11 @@
 # X-Serv-Practica-Museos
 Repositorio de inicio de la práctica final - Curso 2017/2018
 
-  Nombre: Rosa Cristina Ruiz Rivas .
+  Nombre: Rosa Cristina Ruiz Rivas 
   
-  Titulación: Sistemas de Telecomunicación - ADE .
+  Titulación: Sistemas de Telecomunicación - ADE 
   
-  Usuario en Github:    rcruiz .
+  Usuario en Github:    rcruiz 
   
   Usuario en laboratorios de Linux:    rcruiz 
 

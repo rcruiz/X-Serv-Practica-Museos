@@ -7,19 +7,19 @@
 {% endblock %}
 {% block content %}
   <p>{{ content|safe }}</p>
-  {% if user.is_authenticated %}
+  {% if usuario == usReg %}
   <!-- {{ bg.colorFondo|default:"#EFEFEF" }}-->
   <div class="css">
   <h2>Cambia el estilo</h2>
     <form class="css" method="POST" action="/{{ usuario }}">
       {% csrf_token %}
       <input type="color" name="fondo" value={{bg.colorFondo}} >
-      <input id="letra" name="letraTam" type="number" min="6" max="30" value ={{bg.tamLetra|default:"12"}}>
-      <input type='text' name='titulo' value={{title}} >
+      <label for=""></label>
+      <input id="letra" name="letraTam" type="number" min="6" max="30" value ={{bg.tamLetra|default:"12"}}>Cambie tamaño letra<br/>
+      Cambie el titulo: <input type='text' name='titulo' value={{title}} >
       <input type="submit" name = "css" value="Cambiar"/>
       <input type="hidden" name="next" value="/{{museum.usuario}}" />
     </form>
-
   </div>
     {% endif %}
   {% for museum in listaMuseos %}
@@ -29,23 +29,24 @@
         <li><a href="/museos/{{museum.museo.id}}">Más información</a></li></li>
         <li><strong>Fecha de selección: {{museum.fecha}}</strong></li>
       </ul>
-      {% if '{{museum.usuario}}' %}
+      {% if user.is_authenticated %}
         <form method="POST" action="">
           <button type="submit" name="enviar" value={{museum.museo.id}}>Deseleccionar</button>
         </form>
       {% endif %}
     </ul>
   {% endfor %}
-
+  {% if tanda %}
     {% for t in listPage %}
     <div class="numerar">
       <a href='{{museum.usuario}}?numPage={{tanda}}'>{{t}}</a>
     </div>
     {% endfor %}
+  {% endif %}
 {% endblock %}
 {% block sidebar %}
-{% if usuario == user.username %}
-  <h2>Canales de {{user.username}}</h2>
+{% if usuario == usReg %}
+  <h2>Canales de {{usReg}}</h2>
     <ul>
         <li><a href='{{usuario}}/json'>JSON de {{usuario|safe}}</a></li>
         <li><a href='{{usuario}}/xml'>XML de {{usuario|safe}}</a></li>

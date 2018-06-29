@@ -21,6 +21,7 @@ from django.contrib.auth.views import login, logout
 from django.views.static import serve
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     url(r'^$', views.principal, name='barra'),
     url(r'^admin/', include(admin.site.urls)),
@@ -29,11 +30,9 @@ urlpatterns = [
     url(r'^museos/(\d+)', views.museo_id, name='museo_id'),
     url(r'^museos', views.museos_all, name='museos'),
     url(r'^css$', views.css),
-    # url(r'^static/(?P<path>.*)$', serve, {'document_root':settings.STATIC_URL }),
-    # url(r'^(static/(?P<path>.*)$', serve, {'document_root':'templates/businessxhtml'}),
     url(r'^style.css$', serve, {'document_root': 'templates/htmlCss'}),
-    # url(r'^about', views.autoria_html, name='HTML'),
-    url(r'^(\w+)/json', views.user_json, name='XML_user'),
+    url(r'^about', views.about, name='HTML'),
+    url(r'^(\w+)/json', views.user_json, name='JSON_user'),
     url(r'^(\w+)/xml', views.user_xml, name='XML_user'),
     url(r'^(.+)', views.usuario, name='pag_personal'),
 ]

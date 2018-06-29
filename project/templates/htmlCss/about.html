@@ -1,0 +1,30 @@
+{% extends "htmlCss/index.html" %}
+{% block menu %}
+  <li><a href="/">Inicio</a></li>
+{% endblock %}
+
+{% block content %}
+<h3>Práctica Final Museos realizada por: Rosa Cristina Ruiz Rivas.
+Alumna de SARO. Titulación: Sistemas de Tecomunicación - ADE.</h3>
+  <ul>
+        <li>Recurso: <strong>"/"</strong>: Página principal. GET a los 5 museos más seleccionados
+            por los usuarios registrados, que se muestran en la barra lateral a la derecha.
+            Es posible actualizar el recurso barra, cargando de nuevo los datos
+            desde el servidor externo, o filtrando por accesibles, mediante POST.</li>
+
+        <li>Recurso: <strong>"/museos"</strong>:"/museos": Página con todos los museos. Se puede listar filtrando
+            por distrito. Un usuario registrado podrá aquí seleccionar sus museos. </li>
+
+        <li>Recurso: <strong>"/museos/id"</strong>: Muestra la información extraída del XML descargado
+            del portal de datos del Ayuntamiento de Madrid. En la interfaz privada
+            existe un formulario para añadir comentarios.</li>
+
+        <li>Recurso: <strong>"/usuario"</strong>: Muestra los museos seleccionados por usuario de 5 en 5.
+            En la interfaz privada se puede personalizar el estilo CSS para todo el sitio </li>
+
+        <li>Recurso: <strong>"/usuario/json"</strong>: Muestra el canal JSON con los museos
+            seleccionados por usuario. </li>
+
+        <li>Recurso: <strong>"/about"</strong>: Es esta página. </li>
+  </ul>
+{% endblock %}

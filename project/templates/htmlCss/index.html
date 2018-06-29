@@ -33,7 +33,7 @@
             <li><a href="/"></a></li>
           {% endblock %}
           <li><a href="/museos">Todos</a></li>
-          <li><a href="#">About</a></li>
+          <li><a href="/about">About</a></li>
         </ul>
       </div>
       <div id="menubottom"> </div>
@@ -82,11 +82,11 @@
         <div class="sidebar">
         {% block sidebar %}
           <h2>Páginas de usuarios</h2>
-          <ul>
-            {% for us in users %}
-              <li><a href=/{{us}}>{{us.Css.titulo }}</a></li>
-            {% endfor %}
-          </ul>
+              <ul>
+                {% for usuario, value in usersCss.items %}
+                    <li><a href=/{{usuario}}>{{value}}</a></li>
+                {% endfor %}
+              </ul>
           <br/><br/>
         {% endblock %}
         </div>
@@ -99,7 +99,7 @@
           Esta aplicacion utiliza datos del portal de datos abiertos de la ciudad de Madrid"<ul>
           <!--Enlaces a los datos munimadrid -->
           <a href="https://datos.madrid.es/portal/site/egob/menuitem.ac61933d6ee3c31cae77ae7784f1a5a0/?vgnextoid=00149033f2201410VgnVCM100000171f5a0aRCRD&format=xml&file=0&filename=201132-0-museos&mgmtid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&preview=full">Datos XML de madrid.es</a>
-          <a href="http://datos.madrid.es/portal/site/egob/menuitem.c05c1f754a33a9fbe4b2e4b284f1a5a0/?vgnextoid=e84276ac109d3410VgnVCM2000000c205a0aRCRD&vgnextchannel=374512b9ace9f310VgnVCM100000171f5a0aRCRD&vgnextfmt=default">Descripción</a></ul>
+          <a href="https://datos.madrid.es/portal/site/egob/menuitem.c05c1f754a33a9fbe4b2e4b284f1a5a0/?vgnextoid=118f2fdbecc63410VgnVCM1000000b205a0aRCRD&vgnextchannel=374512b9ace9f310VgnVCM100000171f5a0aRCRD&vgnextfmt=default">Descripción</a></ul>
         </p>
       </div>
       <div id="bottom"> </div>
